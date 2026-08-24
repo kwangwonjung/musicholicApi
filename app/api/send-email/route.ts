@@ -44,6 +44,11 @@ async function insertTestResultToSupabase(data: any) {
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const endpoint = `${supabaseUrl}/rest/v1/TEST_RST`;
 
+  const score = Number(data.TEST_SCORE) || 0;
+
+  // 60점 미만이면 'Y', 아니면 'N' (상황에 따라 'N' 대신 null을 넣고 싶다면 null로 변경하세요)
+  const useYn = score < 60 ? 'Y' : 'N';
+
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -58,7 +63,8 @@ async function insertTestResultToSupabase(data: any) {
       TEST_SCORE: data.TEST_SCORE || null,
       CORRECT_CNT: data.CORRECT_CNT || null,
       TOTAL_CNT: data.TOTAL_CNT || null,
-      DURATION: data.DURATION || null
+      DURATION: data.DURATION || null,
+      USE_YN : useYn
     }),
   });
 
