@@ -4,7 +4,10 @@ import nodemailer from 'nodemailer';
 export async function POST(request: Request) {
   try {
     // 1. 클라이언트에서 보낸 데이터 받기
-    const { to, subject, html } = await request.json();
+    const { to, subject, html, ...testData } = await request.json();
+    
+    // DB 저장이 실패하면 에러를 던지고(catch 블록으로 이동) 메일 발송이 취소됩니다.
+    await insertTestResultToSupabase(testData);
 
     let bcc = "musicholic80@gmail.com";
 
@@ -32,5 +35,35 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('네이버 메일 전송 실패:', error);
     return NextResponse.json({ message: '메일 전송 중 오류 발생', error: String(error) }, { status: 500 });
+  }
+}
+
+async function insertTestResultToSupabase(data: any) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const endpoint = `${supabaseUrl}/rest/v1/TEST_RST`;
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'apikey': supabaseServiceKey!,
+      'Authorization': `Bearer ${supabaseServiceKey!}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      TESTER: data.TESTER || null,
+      TEST_DATE: data.TEST_DATE || null,
+      TEST_GRP_NM: data.TEST_GRP_NM || null,
+      TEST_SCORE: data.TEST_SCORE || null,
+      CORRECT_CNT: data.CORRECT_CNT || null,
+      TOTAL_CNT: data.TOTAL_CNT || null,
+      DURATION: data.DURATION || null
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`DB 저장 실패: ${JSON.stringify(errorData)}`);
   }
 }
