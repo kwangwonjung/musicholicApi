@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabaseUrl, supabaseServiceKey } from '@/lib/supabase'; // ⭐️ 공통 변수 임포트
 
 // CORS 허용 헤더 (개발 중에는 '*'로 전체 허용, 나중에는 실제 프론트엔드 주소로 변경 가능)
 const corsHeaders = {
@@ -31,9 +32,6 @@ export async function POST(request: NextRequest) {
         { status: 400, headers: corsHeaders }
       );
     }
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!supabaseUrl || !supabaseServiceKey) {
       return NextResponse.json(

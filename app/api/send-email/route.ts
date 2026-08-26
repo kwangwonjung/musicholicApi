@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { supabaseUrl, supabaseServiceKey } from '@/lib/supabase'; // ⭐️ 공통 변수 임포트
 
 export async function POST(request: Request) {
   try {
@@ -39,9 +40,7 @@ export async function POST(request: Request) {
 }
 
 async function insertTestResultToSupabase(data: any) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
   const endpoint = `${supabaseUrl}/rest/v1/TEST_RST`;
 
   const score = Number(data.TEST_SCORE) || 0;
