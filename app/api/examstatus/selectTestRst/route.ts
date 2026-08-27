@@ -18,13 +18,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { startDate, endDate, useYn, tester } = body;
-
-    console.log("startDate : " + startDate);
-    console.log("endDate : " + endDate);
-    console.log("useYn : " + useYn);
-    console.log("tester : " + tester);
-
-
+ 
     // 필수 값 검증
     if (!startDate || !endDate) {
       return NextResponse.json(
