@@ -65,7 +65,8 @@ async function insertTestResultToSupabase(data: any) {
       DURATION: data.DURATION || null,
       USE_YN : useYn,
       MODE :data.MODE || null,
-      HINT_CNT :data.HINT_CNT || null
+      HINT_CNT :data.HINT_CNT || null,
+      LANG :data.LANG || null,
     }),
   });
 
