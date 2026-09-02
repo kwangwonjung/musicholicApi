@@ -1,4 +1,4 @@
-
+// app/api/calendar/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { corsHeaders, handleOptions, fetchSupabaseApi } from '@/lib/supabase-helper';
 
@@ -9,28 +9,22 @@ export async function OPTIONS() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { startDate, endDate, useYn, tester } = body;
+    const { year, month, tester } = body;
  
     // 필수 값 검증
-    if (!startDate || !endDate) {
+    if (!year || !month || !tester) {
       return NextResponse.json(
-        { success: false, message: '필수 파라미터 누락: startDate와 endDate는 필수 입력값입니다.' },
+        { success: false, message: '필수 파라미터 누락: year, month, tester는 필수 입력값입니다.' },
         { status: 400, headers: corsHeaders }
       );
     }
 
-    // 쿼리스트링 조합
-    const queryParams = new URLSearchParams();
-    queryParams.append('select', '*');
-    queryParams.append('TEST_DATE', `gte.${startDate}`);
-    queryParams.append('TEST_DATE', `lt.${endDate}`);
-    queryParams.append('order', 'TEST_DATE.desc,TEST_SCORE.asc');
-
-    if (useYn) queryParams.append('USE_YN', `eq.${useYn}`);
-    if (tester) queryParams.append('TESTER', `eq.${tester}`);
-
-    // 공통 함수 호출
-    const data = await fetchSupabaseApi(`/rest/v1/V_TEST_RST?${queryParams.toString()}`, 'GET');
+    // 공통 함수를 통한 Supabase RPC 호출
+    const data = await fetchSupabaseApi('/rest/v1/rpc/get_tester_calendar', 'POST', {
+      target_year: Number(year),
+      target_month: Number(month),
+      p_tester: tester,
+    });
 
     return NextResponse.json({ success: true, data }, { status: 200, headers: corsHeaders });
 
