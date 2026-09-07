@@ -10,7 +10,8 @@ export async function POST(request: Request) {
     // DB 저장이 실패하면 에러를 던지고(catch 블록으로 이동) 메일 발송이 취소됩니다.
     await insertTestResultToSupabase(testData);
 
-    let bcc = "musicholic80@gmail.com";
+    let bcc = "";
+    //let bcc = "musicholic80@gmail.com";
 
     // 2. 네이버 이메일 전송 설정 (SMTP)
     const transporter = nodemailer.createTransport({
@@ -149,4 +150,5 @@ async function insertTestResultToSupabase(data: any) {
     const errorData = await response.json();
     throw new Error(`DB 저장 실패: ${JSON.stringify(errorData)}`);
   }
+  
 }
