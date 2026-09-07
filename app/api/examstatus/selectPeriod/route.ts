@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
     console.log('--- [DEBUG] 최종 추출된 값:', { mode, startDate, endDate, tester, testGrpNm });
 
-    // Supabase RPC 함수 호출
+    // Supabase RPC 함수 호출[cite: 4]
     const data = await fetchSupabaseApi('/rest/v1/rpc/get_test_period', 'POST', {
       p_mode: mode,
       p_start_date: startDate,
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       p_test_grp_nm: testGrpNm,
     });
 
-    // Supabase에서 반환된 플랫 데이터를 요구하신 그룹 형태 구조로 변환
+    // Supabase에서 반환된 플랫 데이터를 요구하신 그룹 형태 구조로 변환[cite: 4]
     const groupedMap = new Map();
 
     if (Array.isArray(data)) {
@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
           });
         }
         groupedMap.get(testerName).subjects.push({
+          MODE: row.mode || row.MODE,
           TEST_GRP_NM: row.test_grp_nm || row.TEST_GRP_NM,
           AVG_SCORE: row.avg_score ?? row.AVG_SCORE,
           SOLVE_CNT: row.solve_cnt ?? row.SOLVE_CNT,
